@@ -22,7 +22,7 @@ function init(params) {
 init();
 
 
-
+const answer = document.querySelector('.answer');
 
 function checkMatch(params) {
     if (wordInput.value.toLowerCase() === wordDisplay.innerText.toLowerCase()) {
@@ -39,6 +39,17 @@ function checkMatch(params) {
         const randomIndex = Math.floor(Math.random()*words.length);
         wordDisplay.innerText= words[randomIndex];
         runNotification('success')
+
+
+        // answer
+        answer.innerText = 'good!'
+        answer.style.visibility = 'visible'
+        setTimeout(() => {
+            
+            answer.style.visibility = 'hidden'
+        }, 1000);
+
+        console.log('checkmatch')
     }
     
 }
@@ -102,7 +113,8 @@ function getWords(params) {
 
 function buttonChange(type,text) {
     button.innerText= text;
-    type ==='loading' ? button.classList.add('loading') : button.classList.remove('loading');
+    // type ==='loading' ? button.classList.add('loading') : button.classList.remove('loading');
+    type ==='start' ? button.classList.remove('loading') :  button.classList.add('loading') ;
 }
 
 
@@ -127,7 +139,7 @@ function runNotification(type) {
 }
 
 function stop(params) {
-    buttonChange('Game Start')
+    buttonChange('start', 'game start')
     button.classList.remove('loading');
 
     time = SETTING_TIME;
@@ -139,6 +151,8 @@ function stop(params) {
     // wrongDisplay.innerHTML = wrong
 
     clearInterval(timeInterval);   
+    
+    location.reload();  
 }
 
 
