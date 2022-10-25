@@ -5,6 +5,7 @@ let time;
 let isPlaying = false;
 let score = 0;
 
+const answer = document.querySelector('.answer');
 
 const url = "https://random-word-api.herokuapp.com/word?number=100";
 const timeDisplay = document.querySelector('.time')
@@ -14,17 +15,20 @@ const wordInput = document.querySelector('.word-input')
 const scoreDisplay = document.querySelector('.score')
 
 
-function init(params) {
+function init() {
     getWords();
 
     wordInput.addEventListener('input', checkMatch);    
+
+    // wordInput.addEventListener('change',matchWrong);
 }
 init();
 
 
-const answer = document.querySelector('.answer');
+// 🍀
+ const randomIndex = Math.floor(Math.random()*words.length);
 
-function checkMatch(params) {
+function checkMatch() {
     if (wordInput.value.toLowerCase() === wordDisplay.innerText.toLowerCase()) {
         wordInput.value = "";
         if (!isPlaying) {
@@ -36,7 +40,7 @@ function checkMatch(params) {
         score++;
         scoreDisplay.innerText= score;
         time = SETTING_TIME
-        const randomIndex = Math.floor(Math.random()*words.length);
+
         wordDisplay.innerText= words[randomIndex];
         runNotification('success')
 
@@ -54,21 +58,45 @@ function checkMatch(params) {
     
 }
 
-function checkStatus(params) {
+function checkStatus() {
     if (!isPlaying && time === 0) {
         isPlaying = false;
         buttonChange('start','game start');
         clearInterval(checkInterval);
         
-    }
-    
+    }    
 }
 
-function run(params) {
+// 
+// let wrong = 0;
+// const wrongDisplay = document.querySelector('.score_wrong');
+
+// function matchWrong(){
+//     if (wordDisplay.innerHTML.toLowerCase() !== wordInput.value.toLowerCase()){
+//           wrong++
+//           wrongDisplay.innerHTML = wrong;
+//           wordInput.value = ""; 
+  
+//           answer.innerHTML = 'wrong';                     /* css-js 2 */
+//           answer.style.visibility = "visible";
+//           setTimeout(function(){
+//               answer.style.visibility = "hidden";
+//          }, 1000);        
+
+//          wordDisplay.innerText= words[randomIndex];
+//       } 
+//   }
+  
+
+
+// 🍀 run, stop
+// 👉index.html
+function run() {
     if (words.length < 1) {
-        return
-        
+        return        
     }
+    wordDisplay.innerText= words[randomIndex];
+
     wordInput.value= "";
     wordInput.focus()
     score= 0;
@@ -83,8 +111,29 @@ function run(params) {
     
 }
 
+// 👉index.html
+function stop() {
+    buttonChange('start', 'game start')
+    button.classList.remove('loading');
 
-function countDown(params) {
+    time = SETTING_TIME;
+    timeDisplay.innerHTML = time;
+
+    score = 0;
+    scoreDisplay.innerHTML = score
+    // wrong = 0;
+    // wrongDisplay.innerHTML = wrong
+
+    clearInterval(timeInterval);   
+
+    location.reload();  
+}
+
+
+
+
+
+function countDown() {
     time>0 ? time-- : isPlaying = false;
     timeDisplay.innerText = time;
     if (!isPlaying) {
@@ -96,7 +145,7 @@ function countDown(params) {
 }
 
 
-function getWords(params) {
+function getWords() {
     axios.get(url).then((res) => {
 
         res.data.forEach((word) => {
@@ -136,23 +185,6 @@ function runNotification(type) {
     
         Toastify(option).showToast();
     
-}
-
-function stop(params) {
-    buttonChange('start', 'game start')
-    button.classList.remove('loading');
-
-    time = SETTING_TIME;
-    timeDisplay.innerHTML = time;
-
-    score = 0;
-    scoreDisplay.innerHTML = score
-    // wrong = 0;
-    // wrongDisplay.innerHTML = wrong
-
-    clearInterval(timeInterval);   
-    
-    location.reload();  
 }
 
 
