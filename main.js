@@ -22,13 +22,10 @@ function init(params) {
 init();
 
 
-function getWords(params) {
-    
-}
 
 
 function checkMatch(params) {
-    if (wordInput.ariaValueMax.toLowerCase() === wordDisplay.innerText.toLowerCase()) {
+    if (wordInput.value.toLowerCase() === wordDisplay.innerText.toLowerCase()) {
         wordInput.value = "";
         if (!isPlaying) {
             runNotification('error');
@@ -38,7 +35,7 @@ function checkMatch(params) {
 
         score++;
         scoreDisplay.innerText= score;
-        tiem = SETTING_TIME
+        time = SETTING_TIME
         const randomIndex = Math.floor(Math.random()*words.length);
         wordDisplay.innerText= words[randomIndex];
         runNotification('success')
@@ -46,8 +43,86 @@ function checkMatch(params) {
     
 }
 
+function checkStatus(params) {
+    if (!isPlaying && time === 0) {
+        isPlaying = false;
+        buttonChange('start','game start');
+        clearInterval(checkInterval);
+        
+    }
+    
+}
 
-function runNotification(params) {
+function run(params) {
+    if (words.length < 1) {
+        return
+        
+    }
+    wordInput.value= "";
+    wordInput.focus()
+    score= 0;
+    scoreDisplay.innerText = 0;
+    time = SETTING_TIME;
+    isPlaying= true;
+    timeInterval = setInterval(countDown, 1000);
+
+    checkInterval = setInterval(checkStatus, 50);
+
+    buttonChange('loading','ing');
+    
+}
+
+
+function countDown(params) {
+    time>0 ? time-- : isPlaying = false;
+    timeDisplay.innerText = time;
+    if (!isPlaying) {
+        clearInterval(timeInterval)
+        
+    }
+    
+    console.log('count')
+}
+
+
+function getWords(params) {
+    axios.get(url).then((res) => {
+
+        res.data.forEach((word) => {
+            if (word.length < 7) {
+                words.push(word);
+            }
+            buttonChange('start', '게임시작')
+        })
+    }).catch((err) => {
+        console.log(err);
+    })
+}
+
+
+function buttonChange(type,text) {
+    button.innerText= text;
+    type ==='loading' ? button.classList.add('loading') : button.classList.remove('loading');
+}
+
+
+function runNotification(type) {
+        // toastify options
+        const option = {
+            text: `${wordDisplay.innerText}!!`,
+            duration: 3000,
+            newWindow: true,
+            gravity: "top", // `top` or `bottom`
+            position: 'left', // `left`, `center` or `right`
+            backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
+        }
+        if (type === 'error') {
+            option.text = '우선 게임시작 버튼을 눌러주세요'
+            option.position = 'right'
+            option.backgroundColor = 'red'
+        }
+    
+        Toastify(option).showToast();
     
 }
 
