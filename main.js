@@ -1,5 +1,6 @@
 // 사용 변수
 const SETTING_TIME = 10;
+let randomIndex = 1;
 let words = [];
 let time;
 let isPlaying = false;
@@ -14,18 +15,50 @@ const wordInput = document.querySelector('.word-input')
 const scoreDisplay = document.querySelector('.score')
 
 
+
+
+
+function getWords(params) {
+    axios.get(url).then((res) => {
+
+        res.data.forEach((word) => {
+            if (word.length < 8) {
+                words.push(word);
+            }
+            buttonChange('start', 'game start')
+        })
+        console.log(words)
+        wordDisplay.innerText= words[randomIndex];
+
+    }).catch((err) => {
+        console.log(err);
+    })
+}
+
+
+
 function init(params) {
     getWords();
 
-    wordInput.addEventListener('input', checkMatch);    
+    wordInput.addEventListener('input', checkMatch); 
+    
+    wordInput.addEventListener('change',matchWrong);
+
+    
 }
 init();
 
 
 const answer = document.querySelector('.answer');
 
+
 function checkMatch(params) {
+    
+
     if (wordInput.value.toLowerCase() === wordDisplay.innerText.toLowerCase()) {
+
+        wordDisplay.innerText="";
+
         wordInput.value = "";
         if (!isPlaying) {
             runNotification('error');
@@ -36,7 +69,8 @@ function checkMatch(params) {
         score++;
         scoreDisplay.innerText= score;
         time = SETTING_TIME
-        const randomIndex = Math.floor(Math.random()*words.length);
+      
+        randomIndex = Math.floor(Math.random()*words.length);
         wordDisplay.innerText= words[randomIndex];
         runNotification('success')
 
@@ -53,6 +87,23 @@ function checkMatch(params) {
     }
     
 }
+
+
+function matchWrong(){
+
+    if (wordDisplay.innerHTML.toLowerCase() !== wordInput.value.toLowerCase()){
+          wrong++
+          wrongDisplay.innerHTML = wrong;
+          wordInput.value = ""; 
+  
+          answer.innerHTML = 'wrong';                     /* css-js 2 */
+          answer.style.visibility = "visible";
+          setTimeout(function(){
+              answer.style.visibility = "hidden";
+         }, 1000);
+      } 
+  }
+
 
 function checkStatus(params) {
     if (!isPlaying && time === 0) {
@@ -96,19 +147,7 @@ function countDown(params) {
 }
 
 
-function getWords(params) {
-    axios.get(url).then((res) => {
 
-        res.data.forEach((word) => {
-            if (word.length < 7) {
-                words.push(word);
-            }
-            buttonChange('start', 'game start')
-        })
-    }).catch((err) => {
-        console.log(err);
-    })
-}
 
 
 function buttonChange(type,text) {
