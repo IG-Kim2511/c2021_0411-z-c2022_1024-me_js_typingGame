@@ -92,7 +92,7 @@ function getWords(params) {
             if (word.length < 7) {
                 words.push(word);
             }
-            buttonChange('start', '게임시작')
+            buttonChange('start', 'game start')
         })
     }).catch((err) => {
         console.log(err);
@@ -117,13 +117,28 @@ function runNotification(type) {
             backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
         }
         if (type === 'error') {
-            option.text = '우선 게임시작 버튼을 눌러주세요'
+            option.text = 'click start button'
             option.position = 'right'
             option.backgroundColor = 'red'
         }
     
         Toastify(option).showToast();
     
+}
+
+function stop(params) {
+    buttonChange('Game Start')
+    button.classList.remove('loading');
+
+    time = SETTING_TIME;
+    timeDisplay.innerHTML = time;
+
+    score = 0;
+    scoreDisplay.innerHTML = score
+    // wrong = 0;
+    // wrongDisplay.innerHTML = wrong
+
+    clearInterval(timeInterval);   
 }
 
 
