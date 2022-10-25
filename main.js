@@ -57,14 +57,13 @@ function checkMatch(params) {
 
     if (wordInput.value.toLowerCase() === wordDisplay.innerText.toLowerCase()) {
 
-        wordDisplay.innerText="";
-
-        wordInput.value = "";
         if (!isPlaying) {
-            runNotification('error');
-            return
-            
+            toastifyL('error');
+            return            
         }
+
+        wordDisplay.innerText="";
+        wordInput.value = "";    
 
         score++;
         scoreDisplay.innerText= score;
@@ -72,7 +71,7 @@ function checkMatch(params) {
       
         randomIndex = Math.floor(Math.random()*words.length);
         wordDisplay.innerText= words[randomIndex];
-        runNotification('success')
+        toastifyL('success')
 
 
         // answer
@@ -89,13 +88,30 @@ function checkMatch(params) {
 }
 
 
+// 🍀
+let wrong = 0;
+const wrongDisplay = document.querySelector('.score_wrong');
+
+
 function matchWrong(){
 
     if (wordDisplay.innerHTML.toLowerCase() !== wordInput.value.toLowerCase()){
+
+        if (!isPlaying) {
+            toastifyL('error');
+            return            
+        }        
+          wordInput.value = "";
+          time = SETTING_TIME      
+
           wrong++
-          wrongDisplay.innerHTML = wrong;
+          wrongDisplay.innerText = wrong;
           wordInput.value = ""; 
   
+          randomIndex = Math.floor(Math.random()*words.length);
+          wordDisplay.innerText= words[randomIndex];
+          toastifyL('wrong')          
+
           answer.innerHTML = 'wrong';                     /* css-js 2 */
           answer.style.visibility = "visible";
           setTimeout(function(){
@@ -157,7 +173,7 @@ function buttonChange(type,text) {
 }
 
 
-function runNotification(type) {
+function toastifyL(type) {
         // toastify options
         const option = {
             text: `${wordDisplay.innerText}!!`,
@@ -167,12 +183,14 @@ function runNotification(type) {
             position: 'left', // `left`, `center` or `right`
             backgroundColor: "linear-gradient(to right, #00b09b, #96c93d)"
         }
-        if (type === 'error') {
+        if(type === 'wrong'){
+            option.text = 'wrong'       
+            option.backgroundColor = 'red'
+        }else if (type === 'error') {
             option.text = 'click start button'
             option.position = 'right'
             option.backgroundColor = 'red'
         }
-    
         Toastify(option).showToast();
     
 }
